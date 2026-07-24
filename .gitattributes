@@ -1,0 +1,3 @@
+# Association files are fetched and parsed by Apple/Google. Pin LF so a Windows
+# edit cannot commit CRLF into them.
+* text=auto eol=lf
