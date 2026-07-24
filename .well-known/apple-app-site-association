@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "TEAMID_PENDING.com.kinerixathletics.app",
+        "paths": ["/invite/*", "/vpc/*"]
+      }
+    ]
+  }
+}
