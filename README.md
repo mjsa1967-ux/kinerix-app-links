@@ -53,11 +53,35 @@ adb shell pm get-app-links com.kinerixathletics.app                        # wan
 
 Apple's CDN fetching the file is the real iOS test — your own server answering is not.
 
-## Status
+## Status — infrastructure PROVEN, secrets still pending
 
-Both files currently carry **placeholders** (`TEAMID_PENDING`,
-`SHA256_FINGERPRINT_PENDING`). Verification cannot succeed until they are
-replaced with the Apple Developer Team ID and the release signing SHA-256.
-Publishing them in this state is harmless — they assert nothing — and it lets
-the DNS, Pages, HTTPS and `.nojekyll` chain be proven independently, so filling
-the secrets later is a one-line edit rather than a debugging session.
+Verified live 2026-07-24, immediately after setup:
+
+| Check | Result |
+|---|---|
+| `assetlinks.json` over HTTPS | **200**, `application/json` |
+| `apple-app-site-association` over HTTPS | **200**, `application/octet-stream` |
+| **Apple CDN** fetch + parse | **200, parsed** — see note below |
+| **Google digitalassetlinks** fetch | **fetched OK**; only error is the placeholder fingerprint |
+| `.nojekyll` / dot-directory publishing | working |
+| HTTPS certificate | approved, Enforce HTTPS on |
+
+**The `application/octet-stream` question is ANSWERED.** GitHub Pages cannot set
+`application/json` on an extensionless file, and Apple's docs ask for it — so
+this was flagged as a real risk before setup. Apple's CDN fetched and parsed the
+file anyway, returning it as valid JSON. **No Cloudflare proxy or paid custom
+domain is needed.** Recorded here because the next person will re-ask this.
+
+Both files still carry **placeholders** (`TEAMID_PENDING`,
+`SHA256_FINGERPRINT_PENDING`), so verification cannot yet succeed — Google says
+so explicitly: `malformed cert fingerprint: SHA256_FINGERPRINT_PENDING`. That
+error is the proof the pipeline works: Google reached the file, parsed the JSON,
+and objected only to the value.
+
+Publishing in this state was deliberate. It proved DNS → Pages → `.nojekyll` →
+HTTPS → content-type → Apple/Google fetch end to end, independently of the
+signing secrets, so filling them in is a one-line edit rather than a debugging
+session with five unknowns.
+
+**Remaining:** replace the two placeholders, re-run the two verification URLs
+above, then `adb shell pm get-app-links com.kinerixathletics.app`.
