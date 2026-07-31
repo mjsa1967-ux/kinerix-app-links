@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<!--
+  W-WEB-RESET-PASSWORD-PAGE-01 — public password-reset landing page.
+
+  SOURCE OF TRUTH. This file is mirrored to the GitHub Pages repo that serves
+  app.kinerixathletics.com (mjsa1967-ux/kinerix-app-links) at the SAME path.
+  Change it here first, then re-mirror — the standing rule the .well-known
+  files and the legal mirror both carry.
+
+  WHY A STATIC PAGE AND NOT AN EDGE FUNCTION
+  ------------------------------------------
+  The supabase.co gateway rewrites text/html -> text/plain on every edge
+  function response as an anti-phishing measure, so an edge-function route
+  renders as raw HTML source in a browser. That is why the legal documents are
+  served from GitHub Pages, and it applies identically here.
+
+  WHY THE TOKEN-HASH FLOW
+  -----------------------
+  supabase_flutter 2.16 defaults to PKCE, which stores a code verifier in the
+  storage of the client that REQUESTED the reset. A `?code=` link can only be
+  exchanged by that same client. The common real case is: request on the phone,
+  open the email on a laptop — where no verifier exists and the exchange is
+  impossible. The token-hash flow carries its own proof, so it completes from
+  any device or browser. Configure the Supabase "Reset Password" email template
+  to link here with `?token_hash={{ .TokenHash }}&type=recovery`.
+
+  The implicit `#access_token=` fragment form is ALSO handled, so the page still
+  works if the template is left on a default that delivers fragment tokens.
+  Nothing is silently assumed: when neither form is present the page says so.
+
+  ON THE EMBEDDED KEY
+  -------------------
+  The publishable key below is public by design (Supabase's own term) and is
+  independently rotatable. It is not the app's dart-define credential path and
+  is not a secret: an equivalent key ships inside every published binary. The
+  actual control on this page is the single-use recovery token in the link,
+  which the server validates. Verified 2026-07-26: GoTrue accepts this key on
+  /auth/v1/settings (200) and /auth/v1/verify reaches token validation with it.
+
+  NO THIRD-PARTY REQUESTS. No CDN script, no web font, no analytics. A page
+  whose only job is accepting a password should not load code it does not
+  control, so the GoTrue REST endpoints are called with plain fetch and the
+  type stack is the system one.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- The recovery token rides in the URL: never hand it to a referrer, never index it. -->
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="dark">
+<title>Reset your password · Kinerix</title>
+<style>
+  :root{
+    --navy:#0B1220; --card:#141C2B; --ink100:#F2F5F9; --ink300:#A8B3C4;
+    --line:#243044; --gold:#D9A441; --gold-press:#C08F33;
+    --danger:#E5484D; --danger-bg:rgba(229,72,77,.12); --ok:#33C27F;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--navy);color:var(--ink100);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:16px;line-height:1.45;-webkit-text-size-adjust:100%}
+  .wrap{max-width:420px;margin:0 auto;padding:32px 20px 56px}
+  h1{font-size:26px;line-height:1.2;font-weight:700;margin:0 0 8px}
+  p.sub{color:var(--ink300);margin:0 0 28px;font-size:15px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  label{display:block;font-size:13px;font-weight:600;color:var(--ink300);
+    margin:0 0 6px;letter-spacing:.01em}
+  .field{position:relative;margin-bottom:16px}
+  input[type=password],input[type=text]{width:100%;height:52px;padding:0 52px 0 14px;
+    background:var(--navy);color:var(--ink100);border:1px solid var(--line);
+    border-radius:10px;font-size:16px;font-family:inherit}
+  input:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
+  .peek{position:absolute;right:2px;bottom:2px;width:48px;height:48px;display:flex;
+    align-items:center;justify-content:center;background:none;border:0;cursor:pointer;
+    color:var(--ink300);font-size:12px;font-weight:600;font-family:inherit;border-radius:8px}
+  .peek:focus-visible{outline:2px solid var(--gold)}
+  button.primary{width:100%;height:52px;background:var(--gold);color:#1A1206;border:0;
+    border-radius:10px;font-size:17px;font-weight:700;font-family:inherit;cursor:pointer}
+  button.primary:active{background:var(--gold-press)}
+  button.primary[disabled]{opacity:.55;cursor:default}
+  .banner{display:none;gap:10px;padding:12px 14px;border-radius:10px;margin-bottom:18px;
+    font-size:14px;background:var(--danger-bg);color:#FFB4B6;border:1px solid rgba(229,72,77,.35)}
+  .banner.show{display:flex}
+  .hint{color:var(--ink300);font-size:13px;margin:14px 0 0}
+  .done{text-align:center;padding:12px 0 4px}
+  .done .mark{font-size:44px;line-height:1;color:var(--ok)}
+  .done h2{font-size:22px;margin:14px 0 8px}
+  .done p{color:var(--ink300);font-size:15px;margin:0 0 24px}
+  .hidden{display:none !important}
+  @media (prefers-reduced-motion:no-preference){
+    button.primary{transition:background .12s ease}
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Reset your password</h1>
+  <p class="sub" id="sub">Choose a new password for your Kinerix account.</p>
+
+  <!-- FORM STATE -->
+  <section class="card" id="formCard">
+    <div class="banner" id="err" role="alert" aria-live="assertive"></div>
+
+    <form id="form" novalidate>
+      <div class="field">
+        <label for="pw1">New password</label>
+        <input id="pw1" type="password" autocomplete="new-password"
+               autocapitalize="off" autocorrect="off" spellcheck="false"
+               minlength="8" required aria-describedby="rule">
+        <button type="button" class="peek" data-for="pw1"
+                aria-label="Show password">Show</button>
+      </div>
+
+      <div class="field">
+        <label for="pw2">Confirm new password</label>
+        <input id="pw2" type="password" autocomplete="new-password"
+               autocapitalize="off" autocorrect="off" spellcheck="false"
+               minlength="8" required>
+        <button type="button" class="peek" data-for="pw2"
+                aria-label="Show password">Show</button>
+      </div>
+
+      <button type="submit" class="primary" id="submit">Set new password</button>
+      <p class="hint" id="rule">Use at least 8 characters.</p>
+    </form>
+  </section>
+
+  <!-- SUCCESS STATE -->
+  <section class="card done hidden" id="doneCard">
+    <div class="mark" aria-hidden="true">&#10003;</div>
+    <h2>Password updated</h2>
+    <p>Open the Kinerix app and sign in with your new password.</p>
+  </section>
+
+  <!-- DEAD-LINK STATE -->
+  <section class="card hidden" id="deadCard">
+    <div class="banner show" role="alert">
+      <span id="deadMsg">This reset link is invalid or has expired.</span>
+    </div>
+    <p class="hint">
+      Reset links can only be used once and expire after a short time.
+      Open Kinerix, tap <strong>Forgot password?</strong> on the sign-in screen,
+      and we&rsquo;ll send a fresh one. If you&rsquo;re already signed in, you can
+      change your password from <strong>Settings &rsaquo; Account</strong> without
+      needing email at all.
+    </p>
+  </section>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  var SUPABASE_URL = 'https://isnqhbiuunjzhzjfigfh.supabase.co';
+  var API_KEY = 'sb_publishable_v_ZjATnEqPguedFJqehGMg_-P6J1-rP';
+  var MIN_LEN = 8; // matches PasswordResetScreen + ChangePasswordScreen in the app
+
+  var formCard = document.getElementById('formCard');
+  var doneCard = document.getElementById('doneCard');
+  var deadCard = document.getElementById('deadCard');
+  var errBox   = document.getElementById('err');
+  var submit   = document.getElementById('submit');
+  var pw1      = document.getElementById('pw1');
+  var pw2      = document.getElementById('pw2');
+
+  function showError(msg) {
+    errBox.textContent = msg;
+    errBox.classList.add('show');
+  }
+  function clearError() {
+    errBox.textContent = '';
+    errBox.classList.remove('show');
+  }
+  function showDead(msg) {
+    if (msg) document.getElementById('deadMsg').textContent = msg;
+    formCard.classList.add('hidden');
+    doneCard.classList.add('hidden');
+    deadCard.classList.remove('hidden');
+    document.getElementById('sub').textContent =
+      'We couldn’t open this reset link.';
+  }
+
+  // Show/hide toggles. 48x48 targets, and the label flips so it is announced.
+  Array.prototype.forEach.call(document.querySelectorAll('.peek'), function (b) {
+    b.addEventListener('click', function () {
+      var input = document.getElementById(b.getAttribute('data-for'));
+      var toText = input.type === 'password';
+      input.type = toText ? 'text' : 'password';
+      b.textContent = toText ? 'Hide' : 'Show';
+      b.setAttribute('aria-label', toText ? 'Hide password' : 'Show password');
+      input.focus();
+    });
+  });
+
+  // ── Read the link ────────────────────────────────────────────────────────
+  // Two shapes are accepted, in priority order:
+  //   1. ?token_hash=<hash>&type=recovery   (email template uses {{ .TokenHash }})
+  //   2. #access_token=<jwt>&type=recovery  (implicit-flow fragment)
+  // A `?code=` PKCE link CANNOT be completed here — the verifier lives in the
+  // client that requested the reset — so it is reported honestly rather than
+  // failed with a generic error.
+  var query = new URLSearchParams(window.location.search);
+  var frag  = new URLSearchParams((window.location.hash || '').replace(/^#/, ''));
+
+  var tokenHash  = query.get('token_hash') || frag.get('token_hash');
+  var fragAccess = frag.get('access_token');
+  var linkErrDesc = query.get('error_description') || frag.get('error_description');
+  var pkceCode = query.get('code');
+
+  // The token must not linger in history, screenshots or a shared URL.
+  // Read first, then scrub — everything below works from the variables above.
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  if (linkErrDesc) {
+    showDead(linkErrDesc);
+  } else if (!tokenHash && !fragAccess) {
+    if (pkceCode) {
+      showDead('This link has to be opened on the device that requested the ' +
+               'reset. Request a new one and open it on this device.');
+    } else {
+      showDead('This page opens from the reset link in your email.');
+    }
+  }
+
+  // ── GoTrue REST ──────────────────────────────────────────────────────────
+  function api(path, opts) {
+    opts = opts || {};
+    var headers = { 'apikey': API_KEY, 'Content-Type': 'application/json' };
+    if (opts.bearer) headers['Authorization'] = 'Bearer ' + opts.bearer;
+    return fetch(SUPABASE_URL + '/auth/v1' + path, {
+      method: opts.method || 'POST',
+      headers: headers,
+      body: opts.body ? JSON.stringify(opts.body) : undefined
+    }).then(function (res) {
+      return res.text().then(function (t) {
+        var json = null;
+        try { json = t ? JSON.parse(t) : null; } catch (e) { json = null; }
+        return { ok: res.ok, status: res.status, json: json };
+      });
+    });
+  }
+
+  // Exchange the recovery token for a short-lived session.
+  function getSession() {
+    if (fragAccess) return Promise.resolve(fragAccess);
+    return api('/verify', {
+      body: { type: 'recovery', token_hash: tokenHash }
+    }).then(function (r) {
+      if (!r.ok || !r.json || !r.json.access_token) {
+        var msg = (r.json && (r.json.msg || r.json.message)) ||
+                  'This reset link is invalid or has expired.';
+        var e = new Error(msg); e.dead = true; throw e;
+      }
+      return r.json.access_token;
+    });
+  }
+
+  document.getElementById('form').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    clearError();
+
+    var a = pw1.value, b = pw2.value;
+    if (a.length < MIN_LEN) {
+      showError('Password must be at least ' + MIN_LEN + ' characters.');
+      pw1.focus();
+      return;
+    }
+    if (a !== b) {
+      showError('Passwords do not match.');
+      pw2.focus();
+      return;
+    }
+
+    submit.disabled = true;
+    submit.textContent = 'Saving…';
+
+    getSession()
+      .then(function (token) {
+        return api('/user', {
+          method: 'PUT', bearer: token, body: { password: a }
+        }).then(function (r) {
+          if (!r.ok) {
+            var msg = (r.json && (r.json.msg || r.json.message)) ||
+                      'Couldn’t update your password. Please try again.';
+            throw new Error(msg);
+          }
+          // Revoke the session this page created. Best-effort: the password is
+          // already changed, so a failure here must not read as a failed reset.
+          return api('/logout', { bearer: token }).catch(function () {});
+        });
+      })
+      .then(function () {
+        formCard.classList.add('hidden');
+        deadCard.classList.add('hidden');
+        doneCard.classList.remove('hidden');
+        document.getElementById('sub').textContent = '';
+        doneCard.setAttribute('tabindex', '-1');
+        doneCard.focus();
+      })
+      .catch(function (e) {
+        if (e && e.dead) { showDead(e.message); return; }
+        submit.disabled = false;
+        submit.textContent = 'Set new password';
+        showError((e && e.message) ||
+          'Couldn’t update your password. Please try again.');
+      });
+  });
+})();
+</script>
+</body>
+</html>

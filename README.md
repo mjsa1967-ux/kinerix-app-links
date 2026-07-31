@@ -17,12 +17,37 @@ publishes it. Nothing here grants access to anything; these files only *assert*
 that a named app may claim links on this domain, and the OS verifies that
 assertion against the app's actual signature.
 
+## Also served here: `/auth/reset-password`
+
+`auth/reset-password/index.html` is the landing page for the Supabase
+password-reset email (W-WEB-RESET-PASSWORD-PAGE-01, gov 4609). Unlike the
+association files it is a page a **human** reads, which is precisely why it
+cannot be an edge function: the supabase.co gateway rewrites `text/html` →
+`text/plain` as an anti-phishing measure, so an edge-function route renders as
+raw HTML source in a browser. Static Pages is the fix — the same reason the
+legal documents live in `kinerix-legal`.
+
+It contains no secret. The embedded Supabase key is the **publishable** key
+(public by design, independently rotatable); the control is the single-use
+recovery token in the emailed link. The page makes **no third-party requests** —
+no CDN script, no web font, no analytics — because a page whose only job is
+accepting a password should not load code we do not control.
+
+⚠ **If the publishable key is rotated, this page breaks silently.** Re-mirror it
+as part of any rotation.
+
+⚠ It stays inert until two dashboard settings land: the redirect URL in
+**Auth → URL Configuration**, and an **Auth → Email Templates → Reset Password**
+link of the form `…/auth/reset-password?token_hash={{ .TokenHash }}&type=recovery`.
+Both are dashboard-only, so no gate in either repo can see them drift.
+
 ## ⚠ Source of truth is the app repo, not this one
 
-Canonical copies live at `web/.well-known/` in **`mjsa1967-ux/kinerix_beta`**,
-where `tools/deeplink_domain_audit.py` (DL-06, DL-10) gates them against the
-declared host and app identifier. **Edit there, then mirror here** — the same
-standing rule the `kinerix-legal` mirror carries.
+Canonical copies live at `web/.well-known/` and `web/auth/` in
+**`mjsa1967-ux/kinerix_beta`**, where `tools/deeplink_domain_audit.py`
+(DL-06, DL-09, DL-10) gates them against the declared host and app identifier.
+**Edit there, then mirror here** — the same standing rule the `kinerix-legal`
+mirror carries.
 
 ## ⚠ `.nojekyll` is load-bearing — do not delete it
 
