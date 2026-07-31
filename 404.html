@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!--
+  W-WEB-INVITE-LANDING-PAGE-01 — Pages 404 handler + path-form invite rewrite.
+
+  SOURCE OF TRUTH. Mirrored to mjsa1967-ux/kinerix-app-links at the repo root.
+
+  WHY THIS FILE EXISTS
+  --------------------
+  Both server emitters send https://app.kinerixathletics.com/invite/<token> —
+  the token as a PATH SEGMENT. GitHub Pages serves static files and has no
+  rewrite rules, so /invite/<token> can never match a file. Pages does serve a
+  root 404.html for any unmatched path, which is the only hook available: this
+  page reads the path, and forwards a token-shaped one to /invite/?token=<token>,
+  where the real page lives and answers with a 200.
+
+  Links already in the wild carry the path form, so this is not a transitional
+  shim that can be deleted after an emitter change — it is the compatibility
+  surface for every invite ever sent.
+
+  It must NOT duplicate the invite UI. One page renders invites; this one only
+  decides where to send the request. Two copies of that UI would drift.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="dark">
+<title>Page not found &middot; Kinerix</title>
+<style>
+  html,body{margin:0;padding:0;background:#0B1220;color:#F2F5F9;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:16px;line-height:1.5}
+  .wrap{max-width:560px;margin:0 auto;padding:56px 22px}
+  .brand{font-weight:600;letter-spacing:.02em;color:#A8B3C4;font-size:14px}
+  h1{font-size:24px;font-weight:700;margin:14px 0 8px}
+  p{color:#A8B3C4;margin:0 0 12px}
+</style>
+</head>
+<body>
+<main class="wrap" id="main" hidden>
+  <div class="brand">Kinerix</div>
+  <h1>Page not found</h1>
+  <p>That link doesn&rsquo;t point anywhere on this site.</p>
+  <p>If you were sent an invitation, open the full link or code you received.</p>
+</main>
+<script>
+(function () {
+  'use strict';
+  var segs = window.location.pathname.split('/').filter(Boolean);
+
+  // Only ever rewrites to a fixed same-origin path with the token as a query
+  // parameter — the destination is a constant, so this cannot become an open
+  // redirect no matter what the path contains.
+  if (segs.length >= 2 && segs[0].toLowerCase() === 'invite') {
+    var handle = segs[1];
+    // Claim tokens are long and opaque; short codes are ~6 typed characters.
+    // Route on shape so a code pasted into the path still reaches the page as
+    // a code, which is what the preview RPC needs to look it up.
+    var key = (handle.length <= 12) ? 'code' : 'token';
+    window.location.replace('/invite/?' + key + '=' + encodeURIComponent(handle) +
+      window.location.hash);
+    return;
+  }
+
+  // A bare /invite/ with a query string is already handled by the real page;
+  // anything else genuinely is not found. Reveal the message only now, so the
+  // redirect path never flashes "Page not found" first.
+  document.getElementById('main').hidden = false;
+})();
+</script>
+</body>
+</html>

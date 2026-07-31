@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<!--
+  W-WEB-INVITE-LANDING-PAGE-01 — public roster-invite landing page.
+
+  SOURCE OF TRUTH. Mirrored to the GitHub Pages repo that serves
+  app.kinerixathletics.com (mjsa1967-ux/kinerix-app-links) at the same path.
+  Edit here first, then re-mirror.
+
+  WHAT THIS REPLACES, AND WHY
+  ---------------------------
+  supabase/functions/roster-invite-claim/index.ts was written to render this
+  page and was never deployed. It could not have worked from a browser anyway:
+  the supabase.co gateway rewrites text/html -> text/plain on GET, so it would
+  render as raw HTML source. Its own header comment says it "mirrors the
+  legal-docs public-HTML pattern" — that is precisely the pattern that failed
+  and moved the legal documents to GitHub Pages.
+
+  There was a second, independent fault. Both server emitters
+  (fn_create_athlete_invite_v1, fn_authorize_athlete_invite_email_send_v1) send
+  https://app.kinerixathletics.com/invite/<token>, and that path 404'd: this
+  domain served only .well-known/. So every emailed invite opened without the
+  app installed hit a dead end — and App Links verification cannot succeed while
+  both association files still carry founder placeholders, which means EVERY
+  device. This page is that path.
+
+  URL SHAPES ACCEPTED
+  -------------------
+    /invite/?token=<claim token>     (also ?invite=)
+    /invite/?code=<short code>       (also ?short_code=)
+    /invite/<claim token>            — served via 404.html, which rewrites it to
+                                       the ?token= form (GitHub Pages has no
+                                       rewrite rules of its own).
+  The Flutter parser (features/invites/invite_claim.dart) accepts the same set,
+  so the two never disagree about what a link means.
+
+  WHAT THIS PAGE IS NOT
+  ---------------------
+  It never claims. api_preview_invite_v1 is READ-ONLY and does not burn the
+  handle; the claim happens in-app, authenticated, via fn_claim_athlete_invite_v1.
+  This page shows who invited you, where, and as what — then opens the app.
+
+  NO THIRD-PARTY REQUESTS. No CDN script, no web font, no analytics. All server
+  values are written with textContent, never innerHTML, so there is no HTML
+  escaping to get wrong.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- The claim token rides in the URL: never hand it to a referrer, never index it. -->
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="dark">
+<title>You&rsquo;ve been invited &middot; Kinerix</title>
+<style>
+  :root{
+    --navy:#0B1220; --card:#161F2E; --line:#243248; --ink100:#F2F5F9;
+    --ink300:#A8B3C4; --teal:#1A7A7B; --teal-press:#15625F;
+    --danger:#E5484D; --danger-bg:rgba(229,72,77,.12);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--navy);color:var(--ink100);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%}
+  .wrap{max-width:560px;margin:0 auto;padding:28px 22px 64px}
+  .brand{font-weight:600;letter-spacing:.02em;color:var(--ink300);font-size:14px}
+  h1{font-size:25px;line-height:1.22;font-weight:700;margin:14px 0 6px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:20px;margin:22px 0}
+  .row{margin:0 0 14px}
+  .row:last-child{margin-bottom:0}
+  .row .lbl{display:block;font-size:12px;font-weight:600;letter-spacing:.04em;
+    text-transform:uppercase;color:var(--ink300);margin:0 0 2px}
+  .row .val{font-size:17px;font-weight:600}
+  a.cta{display:flex;align-items:center;justify-content:center;min-height:48px;
+    text-decoration:none;font-weight:700;font-size:17px;background:var(--teal);
+    color:#EAF7F7;padding:12px 18px;border-radius:12px;margin:20px 0 12px}
+  a.cta:active{background:var(--teal-press)}
+  .fallback{font-size:14px;color:var(--ink300);text-align:center;margin:0}
+  .code{display:inline-block;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:17px;font-weight:700;letter-spacing:.14em;color:var(--ink100);
+    background:var(--navy);border:1px solid var(--line);border-radius:8px;
+    padding:6px 12px;margin-top:8px}
+  .notice{font-size:13px;color:var(--ink300);border-top:1px solid var(--line);
+    margin-top:24px;padding-top:16px;white-space:pre-wrap}
+  .banner{display:flex;padding:12px 14px;border-radius:10px;font-size:14px;
+    background:var(--danger-bg);color:#FFB4B6;border:1px solid rgba(229,72,77,.35)}
+  footer{margin-top:40px;font-size:12px;color:var(--ink300);opacity:.7}
+  .hidden{display:none !important}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="brand">Kinerix</div>
+  <h1 id="head">Opening your invitation&hellip;</h1>
+
+  <!-- VALID INVITE -->
+  <section id="ok" class="hidden">
+    <div class="card">
+      <div class="row"><span class="lbl">Invited by</span><span class="val" id="inviter"></span></div>
+      <div class="row hidden" id="orgRow"><span class="lbl">Organization</span><span class="val" id="org"></span></div>
+      <div class="row hidden" id="teamRow"><span class="lbl">Team</span><span class="val" id="team"></span></div>
+      <div class="row"><span class="lbl">Joining as</span><span class="val" id="role"></span></div>
+      <div class="row hidden" id="expRow"><span class="lbl">Valid through</span><span class="val" id="exp"></span></div>
+    </div>
+
+    <a class="cta" id="openApp" href="#">Open in the Kinerix app</a>
+    <p class="fallback" id="fallback"></p>
+
+    <div class="notice hidden" id="notice"></div>
+  </section>
+
+  <!-- UNAVAILABLE INVITE -->
+  <section id="bad" class="hidden">
+    <div class="card">
+      <div class="banner" role="alert"><span id="badMsg"></span></div>
+      <p class="fallback" style="text-align:left;margin-top:14px">
+        Ask whoever invited you to send a new invitation.
+      </p>
+    </div>
+  </section>
+
+  <footer>NextRep Athletics Technologies LLC &mdash; Kinerix.</footer>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  var SUPABASE_URL = 'https://isnqhbiuunjzhzjfigfh.supabase.co';
+  var API_KEY = 'sb_publishable_v_ZjATnEqPguedFJqehGMg_-P6J1-rP';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function show(el) { el.classList.remove('hidden'); }
+  function hide(el) { el.classList.add('hidden'); }
+
+  // Every server value goes in as TEXT, never markup — there is no escaping to
+  // get wrong, and org/team/inviter names are user-supplied upstream.
+  function setText(id, value) { $(id).textContent = value; }
+
+  var q = new URLSearchParams(window.location.search);
+  var token = (q.get('token') || q.get('invite') || '').trim();
+  var code  = (q.get('code') || q.get('short_code') || '').trim();
+
+  // Read first, then scrub: the claim token must not linger in history or in a
+  // URL the recipient might screenshot and share.
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  function fail(msg) {
+    setText('head', 'Invitation unavailable');
+    setText('badMsg', msg);
+    hide($('ok')); show($('bad'));
+  }
+
+  if (!token && !code) {
+    fail('Use the full invitation link or code you were sent.');
+    return;
+  }
+
+  function rpc(name, body) {
+    return fetch(SUPABASE_URL + '/rest/v1/rpc/' + name, {
+      method: 'POST',
+      headers: { 'apikey': API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body || {})
+    }).then(function (res) {
+      return res.text().then(function (t) {
+        var json = null;
+        try { json = t ? JSON.parse(t) : null; } catch (e) { json = null; }
+        return { ok: res.ok, json: json };
+      });
+    });
+  }
+
+  // The retention notice is counsel-binding and server-owned. It is fetched
+  // through a narrow anon RPC because anon cannot SELECT cfg_legal_surface_copy
+  // (42501) — and it is NEVER hardcoded here: §RUMC binds legal copy to cfg_*.
+  // Absent or unreachable => the block simply does not render (fail-soft), which
+  // is also the correct behaviour before counsel activates the row.
+  function renderNotice() {
+    return rpc('api_get_invite_retention_notice_v1', {})
+      .then(function (r) {
+        var body = (r.ok && typeof r.json === 'string') ? r.json : null;
+        if (body) { setText('notice', body); show($('notice')); }
+      })
+      .catch(function () { /* fail-soft, deliberately silent */ });
+  }
+
+  rpc('api_preview_invite_v1', {
+    p_claim_token: token || null,
+    p_short_code: code || null
+  }).then(function (r) {
+    var p = r.json;
+
+    // Server messages render VERBATIM. The RPC differentiates NOT_FOUND /
+    // NOT_PENDING / REVOKED / EXPIRED / RATE_LIMITED with counsel-shaped copy,
+    // and the in-app claim surface renders the same strings — inventing kinder
+    // wording here would make the two surfaces disagree about the same invite.
+    if (!p || p.success !== true) {
+      fail((p && p.message) ||
+        'We couldn’t find this invite. Check the link or code and try again.');
+      return;
+    }
+
+    setText('head', 'You’ve been invited to Kinerix');
+    setText('inviter', p.inviter_name || 'A coach, trainer, or organization');
+    setText('role', p.role_token === 'PARENT'
+      ? 'Parent or guardian' : 'Athlete');
+
+    if (p.org_name)  { setText('org', p.org_name);   show($('orgRow')); }
+    if (p.team_name) { setText('team', p.team_name); show($('teamRow')); }
+    if (p.expires_at) {
+      var d = new Date(p.expires_at);
+      if (!isNaN(d.getTime())) {
+        setText('exp', d.toLocaleDateString(undefined,
+          { year: 'numeric', month: 'long', day: 'numeric' }));
+        show($('expRow'));
+      }
+    }
+
+    // The custom scheme is the reliable opener. The https form of this URL only
+    // reaches the app once App Links / Universal Links verification succeeds,
+    // and it cannot while both association files carry founder placeholders —
+    // pointing the button at https today would just reload this page.
+    $('openApp').setAttribute('href', 'kinerix://invite?' +
+      (token ? 'token=' + encodeURIComponent(token)
+             : 'code=' + encodeURIComponent(code)));
+
+    // No store buttons. The apps are unpublished, so there is no listing to
+    // link; the previous default pointed at a domain Kinerix does not own. An
+    // absent affordance is honest — a dead link is not. Add the store URLs here
+    // when the apps publish.
+    var fb = $('fallback');
+    fb.textContent = 'Don’t have the app yet? Ask whoever invited you for the ' +
+                     'Kinerix app link' + (code ? ', then enter this code:' : '.');
+    if (code) {
+      var el = document.createElement('span');
+      el.className = 'code';
+      el.textContent = code;
+      fb.appendChild(document.createElement('br'));
+      fb.appendChild(el);
+    }
+
+    hide($('bad')); show($('ok'));
+    return renderNotice();
+  }).catch(function () {
+    fail('We couldn’t load this invitation right now. Please try again shortly.');
+  });
+})();
+</script>
+</body>
+</html>
