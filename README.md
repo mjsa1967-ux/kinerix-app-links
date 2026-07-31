@@ -47,6 +47,28 @@ work — but a redirect is one more hop where a mail scanner or link-rewriting
 proxy could drop the token, and the token is single-use, so anything that
 consumes or mangles it burns the reset.
 
+## Also served here: `/invite/` + `404.html`
+
+`invite/index.html` is the public roster-invite landing page
+(W-WEB-INVITE-LANDING-PAGE-01, gov 4612). It closed a live dead end: both server
+emitters send `app.kinerixathletics.com/invite/<token>`, and this repo served
+only `.well-known/`, so that path 404'd. App Links verification cannot succeed
+while the two placeholders below are unfilled, so **every** emailed invite opened
+without the app installed hit it.
+
+`404.html` is **load-bearing and permanent** — do not delete it as boilerplate.
+The invite token arrives as a *path segment*, GitHub Pages has no rewrite rules,
+and a root `404.html` is the only hook available: it forwards `/invite/<token>`
+to `/invite/?token=<token>`, where the real page answers with a 200. Every invite
+already emailed carries the path form, so this is not a transitional shim. It
+only ever rewrites to a fixed same-origin path, so it cannot become an open
+redirect; unmatched non-invite paths still render an ordinary not-found.
+
+The page holds no secret — same publishable key as the reset page — and calls two
+anon RPCs: `api_preview_invite_v1` (read-only; it never burns the claim handle)
+and `api_get_invite_retention_notice_v1` (the counsel-binding notice, which is
+bound from the database and never hardcoded).
+
 ## ⚠ Source of truth is the app repo, not this one
 
 Canonical copies live at `web/.well-known/` and `web/auth/` in
