@@ -38,8 +38,14 @@ as part of any rotation.
 
 ⚠ It stays inert until two dashboard settings land: the redirect URL in
 **Auth → URL Configuration**, and an **Auth → Email Templates → Reset Password**
-link of the form `…/auth/reset-password?token_hash={{ .TokenHash }}&type=recovery`.
+link of the form `…/auth/reset-password/?token_hash={{ .TokenHash }}&type=recovery`.
 Both are dashboard-only, so no gate in either repo can see them drift.
+
+**Use the trailing slash.** Verified 2026-07-31: Pages 301s the extensionless
+path to the trailing-slash one and *does* preserve the query string, so both
+work — but a redirect is one more hop where a mail scanner or link-rewriting
+proxy could drop the token, and the token is single-use, so anything that
+consumes or mangles it burns the reset.
 
 ## ⚠ Source of truth is the app repo, not this one
 
