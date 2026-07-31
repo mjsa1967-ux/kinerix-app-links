@@ -65,8 +65,9 @@
   h1{font-size:26px;line-height:1.2;font-weight:700;margin:0 0 8px}
   p.sub{color:var(--ink300);margin:0 0 28px;font-size:15px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
-  label{display:block;font-size:13px;font-weight:600;color:var(--ink300);
-    margin:0 0 6px;letter-spacing:.01em}
+  /* MOCK-N93 F1: 12px uppercase label above each 52px input. */
+  label{display:block;font-size:12px;font-weight:600;color:var(--ink300);
+    margin:0 0 9px;text-transform:uppercase;letter-spacing:.09em}
   .field{position:relative;margin-bottom:16px}
   input[type=password],input[type=text]{width:100%;height:52px;padding:0 52px 0 14px;
     background:var(--navy);color:var(--ink100);border:1px solid var(--line);
@@ -74,7 +75,7 @@
   input:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
   .peek{position:absolute;right:2px;bottom:2px;width:48px;height:48px;display:flex;
     align-items:center;justify-content:center;background:none;border:0;cursor:pointer;
-    color:var(--ink300);font-size:12px;font-weight:600;font-family:inherit;border-radius:8px}
+    color:var(--gold);font-size:14px;font-weight:600;font-family:inherit;border-radius:8px}
   .peek:focus-visible{outline:2px solid var(--gold)}
   button.primary{width:100%;height:52px;background:var(--gold);color:#1A1206;border:0;
     border-radius:10px;font-size:17px;font-weight:700;font-family:inherit;cursor:pointer}
@@ -84,10 +85,13 @@
     font-size:14px;background:var(--danger-bg);color:#FFB4B6;border:1px solid rgba(229,72,77,.35)}
   .banner.show{display:flex}
   .hint{color:var(--ink300);font-size:13px;margin:14px 0 0}
+  /* MOCK-N93 F4: dead-link explanation sits BELOW the card, left-aligned. */
+  .para{color:var(--ink300);font-size:13px;line-height:1.62;margin:18px 0 0}
   .done{text-align:center;padding:12px 0 4px}
   .done .mark{font-size:44px;line-height:1;color:var(--ok)}
   .done h2{font-size:22px;margin:14px 0 8px}
-  .done p{color:var(--ink300);font-size:15px;margin:0 0 24px}
+  .done p{color:var(--ink300);font-size:15px;line-height:1.5;margin:0 0 10px}
+  .done p:last-of-type{margin-bottom:24px}
   .hidden{display:none !important}
   @media (prefers-reduced-motion:no-preference){
     button.primary{transition:background .12s ease}
@@ -127,24 +131,32 @@
     </form>
   </section>
 
-  <!-- SUCCESS STATE -->
+  <!-- SUCCESS STATE — MOCK-N93 F3: two lines, not one paragraph: what
+       happened, then what to do next. -->
   <section class="card done hidden" id="doneCard">
     <div class="mark" aria-hidden="true">&#10003;</div>
     <h2>Password updated</h2>
-    <p>Open the Kinerix app and sign in with your new password.</p>
+    <p>Your Kinerix password has been changed.</p>
+    <p>Sign in with your new password to continue.</p>
   </section>
 
-  <!-- DEAD-LINK STATE -->
-  <section class="card hidden" id="deadCard">
-    <div class="banner show" role="alert">
-      <span id="deadMsg">This reset link is invalid or has expired.</span>
+  <!-- DEAD-LINK STATE — MOCK-N93 F4: the card holds ONLY the banner; the
+       explanation is a left-aligned paragraph BELOW it, outside the card. The
+       h1 does not change (the page must still read as the right page with a
+       stale link) — the lede line under it carries the situation instead. -->
+  <section class="hidden" id="deadCard">
+    <div class="card">
+      <div class="banner show" role="alert">
+        <span id="deadMsg">This reset link is invalid or has expired.</span>
+      </div>
     </div>
-    <p class="hint">
-      Reset links can only be used once and expire after a short time.
-      Open Kinerix, tap <strong>Forgot password?</strong> on the sign-in screen,
-      and we&rsquo;ll send a fresh one. If you&rsquo;re already signed in, you can
-      change your password from <strong>Settings &rsaquo; Account</strong> without
-      needing email at all.
+    <p class="para">
+      Reset links work once and stop working a short time after they are sent,
+      so an older email in your inbox will land here.
+      <br><br>
+      Request a new reset link from the sign-in screen and use the most recent
+      email you receive. If you are already signed in on this device, you can
+      change your password instead under <strong>Settings &rsaquo; Account</strong>.
     </p>
   </section>
 </main>
@@ -178,8 +190,10 @@
     formCard.classList.add('hidden');
     doneCard.classList.add('hidden');
     deadCard.classList.remove('hidden');
+    // MOCK-N93 F4: the h1 stays "Reset your password" — it is what tells the
+    // reader they are on the right page with a stale link. Only the lede moves.
     document.getElementById('sub').textContent =
-      'We couldn’t open this reset link.';
+      'This reset link can no longer be used.';
   }
 
   // Show/hide toggles. 48x48 targets, and the label flips so it is announced.
