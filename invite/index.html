@@ -213,8 +213,13 @@
     if (p.expires_at) {
       var d = new Date(p.expires_at);
       if (!isNaN(d.getTime())) {
+        // timeZone:'UTC' is load-bearing, not a formatting preference. expires_at
+        // is a timestamptz that lands on UTC midnight, so local formatting shows
+        // the PREVIOUS day to every viewer west of Greenwich — an invite valid
+        // through Sept 1 read "August 31" in testing. Understating an expiry is
+        // the safer direction, but it still tells the recipient something false.
         setText('exp', d.toLocaleDateString(undefined,
-          { year: 'numeric', month: 'long', day: 'numeric' }));
+          { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }));
         show($('expRow'));
       }
     }
