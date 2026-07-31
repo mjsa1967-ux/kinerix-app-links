@@ -50,6 +50,31 @@
   'use strict';
   var segs = window.location.pathname.split('/').filter(Boolean);
 
+  // ── /auth/reset-password/<token_hash> ────────────────────────────────────
+  // The reset link CANNOT carry the token as a query parameter, because
+  // Supabase's outbound mail corrupts the "=" that introduces it. Measured
+  // 2026-07-31 across three consecutive sends of the identical template, the
+  // same character came out three different ways:
+  //     ?token_hash=<tok>  ->  ?token_hashz7b2…      ("=" dropped)
+  //                        ->  ?token_hash#16de…     ("=" became "#")
+  //                        ->  ?token_hash�4ed6…    ("=" became U+FFFD)
+  // That is a bare "=" being read as a quoted-printable escape prefix and
+  // eating the following characters — the result varies because it depends on
+  // the token's leading bytes. `&type=recovery` survives in the same URL, so
+  // it is specifically the "=" ahead of a hex-ish value that dies.
+  //
+  // The fix is to emit NO "=" at all: the email links to
+  //     /auth/reset-password/<token_hash>
+  // and this handler converts it back to the query form the page reads. Same
+  // mechanism as the invite path below, for the same reason — Pages has no
+  // rewrite rules, so a root 404.html is the only hook.
+  if (segs.length >= 3 && segs[0].toLowerCase() === 'auth' &&
+      segs[1].toLowerCase() === 'reset-password') {
+    window.location.replace('/auth/reset-password/?token_hash=' +
+      encodeURIComponent(segs[2]) + window.location.hash);
+    return;
+  }
+
   // Only ever rewrites to a fixed same-origin path with the token as a query
   // parameter — the destination is a constant, so this cannot become an open
   // redirect no matter what the path contains.
