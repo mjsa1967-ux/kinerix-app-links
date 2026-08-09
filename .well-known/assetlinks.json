@@ -4,7 +4,7 @@
     "target": {
       "namespace": "android_app",
       "package_name": "com.kinerixathletics.app",
-      "sha256_cert_fingerprints": ["SHA256_FINGERPRINT_PENDING"]
+      "sha256_cert_fingerprints": ["9A:98:4D:09:E2:60:68:16:34:7D:39:70:3C:89:BB:50:8B:28:4B:A8:5D:A7:57:BB:06:6D:A7:71:03:B7:8F:D2"]
     }
   }
 ]
