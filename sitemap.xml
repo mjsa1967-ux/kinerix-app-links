@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Source of truth: web_public/sitemap.xml in mjsa1967-ux/kinerix_beta.
+  One public page. legal.kinerixathletics.com is a separate host and needs its
+  own sitemap there; a sitemap may not list URLs on a host it is not served from.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://app.kinerixathletics.com/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

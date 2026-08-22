@@ -1,0 +1,13 @@
+# https://app.kinerixathletics.com/
+# Source of truth: web_public/robots.txt in mjsa1967-ux/kinerix_beta.
+# NOTE: rewrite Host + Sitemap if the public home moves to the apex domain.
+
+User-agent: *
+Allow: /
+
+# Token-bearing and utility routes. Not secret — these simply have no standalone
+# meaning to a crawler, and an indexed invite URL is an invite handle in a search result.
+Disallow: /invite/
+Disallow: /auth/
+
+Sitemap: https://app.kinerixathletics.com/sitemap.xml
