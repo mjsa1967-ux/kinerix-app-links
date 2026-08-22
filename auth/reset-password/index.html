@@ -96,6 +96,11 @@
   @media (prefers-reduced-motion:no-preference){
     button.primary{transition:background .12s ease}
   }
+  /* HOME-LINK */
+  footer.sitefoot{max-width:420px;margin:28px auto 40px;padding:0 20px;
+    font-size:13px;text-align:center}
+  footer.sitefoot a{color:#8CC6C6;text-decoration:none;display:inline-block;padding:6px 10px}
+  footer.sitefoot a:hover,footer.sitefoot a:focus-visible{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -161,6 +166,11 @@
   </section>
 </main>
 
+<!-- HOME-LINK: reset links are one-shot, so this page is often reached with
+     nothing left to do on it. no-referrer above keeps the recovery token
+     out of the Referer header on the way out. -->
+<footer class="sitefoot"><a href="https://app.kinerixathletics.com/">Kinerix</a></footer>
+
 <script>
 (function () {
   'use strict';
@@ -216,12 +226,42 @@
   // client that requested the reset — so it is reported honestly rather than
   // failed with a generic error.
   var query = new URLSearchParams(window.location.search);
-  var frag  = new URLSearchParams((window.location.hash || '').replace(/^#/, ''));
+  var rawFrag = (window.location.hash || '').replace(/^#/, '');
+  var frag  = new URLSearchParams(rawFrag);
 
-  var tokenHash  = query.get('token_hash') || frag.get('token_hash');
-  var fragAccess = frag.get('access_token');
+  // W-SEC-RT-WAVE2-CAPTRANSPORT-01 (RT-AUTH-06): preferred shape is a BARE
+  // fragment — /auth/reset-password/#<token_hash>, no "=" and no key name.
+  //
+  // Why bare rather than "#token_hash=<hash>": the reason this token travelled
+  // in the PATH in the first place is that Supabase's outbound mail corrupts a
+  // bare "=" ahead of a hex-ish value (measured three different ways across
+  // three identical sends — see web/404.html). A "#token_hash=" fragment
+  // reintroduces exactly that character in exactly that position, so the
+  // obvious "just use a fragment" fix would have regressed delivery. With no
+  // "=" anywhere, there is nothing for the mailer to mangle.
+  //
+  // A fragment is never sent in the HTTP request, so origin, CDN, proxy and
+  // analytics logs cannot see it. The path form is retained below for links
+  // already in inboxes; those still expose the token once, which is why the
+  // 404 handler no longer converts them into a SECOND logged copy as a query.
+  var bareFrag = (rawFrag && rawFrag.indexOf('=') === -1 && rawFrag.indexOf('&') === -1)
+    ? decodeURIComponent(rawFrag).trim()
+    : '';
+
+  var tokenHash  = bareFrag || query.get('token_hash') || frag.get('token_hash');
   var linkErrDesc = query.get('error_description') || frag.get('error_description');
   var pkceCode = query.get('code');
+
+  // W-AUTH-REDTEAM-REMEDIATION-01 (finding 9): the fragment path is now bound to
+  // type=recovery, matching what the token_hash path has always asserted to
+  // GoTrue. Previously ANY access_token in the fragment was accepted as the
+  // bearer for PUT /user {password} — so any other GoTrue flow that could be
+  // made to redirect here with a fragment token (a signup-confirmation or
+  // magic-link template pointed at this URL, now or by a later edit) became a
+  // silent password-set on a fully authenticated session.
+  var fragType   = (frag.get('type') || '').toLowerCase();
+  var fragAccess = (fragType === 'recovery') ? frag.get('access_token') : null;
+  var fragWrongType = !!frag.get('access_token') && fragType !== 'recovery';
 
   // The token must not linger in history, screenshots or a shared URL.
   // Read first, then scrub — everything below works from the variables above.
@@ -232,7 +272,12 @@
   if (linkErrDesc) {
     showDead(linkErrDesc);
   } else if (!tokenHash && !fragAccess) {
-    if (pkceCode) {
+    if (fragWrongType) {
+      // Named honestly rather than collapsed into "invalid link": the token is
+      // real, it is just not a recovery token, and this page must not spend it.
+      showDead('This link is not a password-reset link. Request a reset from ' +
+               'the sign-in screen and open the email it sends.');
+    } else if (pkceCode) {
       showDead('This link has to be opened on the device that requested the ' +
                'reset. Request a new one and open it on this device.');
     } else {

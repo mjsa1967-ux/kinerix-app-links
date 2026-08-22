@@ -64,6 +64,9 @@
     font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%}
   .wrap{max-width:560px;margin:0 auto;padding:28px 22px 64px}
   .brand{font-weight:600;letter-spacing:.02em;color:var(--ink300);font-size:14px}
+  /* HOME-LINK: an expired or mistyped invite still deserves a way forward. */
+  a.brand{text-decoration:none;padding-block:6px}
+  a.brand:hover,a.brand:focus-visible{text-decoration:underline}
   h1{font-size:25px;line-height:1.22;font-weight:700;margin:14px 0 6px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
     padding:20px;margin:22px 0}
@@ -91,7 +94,7 @@
 </head>
 <body>
 <main class="wrap">
-  <div class="brand">Kinerix</div>
+  <a class="brand" href="https://app.kinerixathletics.com/">Kinerix</a>
   <h1 id="head">Opening your invitation&hellip;</h1>
 
   <!-- VALID INVITE -->
@@ -141,6 +144,24 @@
   var q = new URLSearchParams(window.location.search);
   var token = (q.get('token') || q.get('invite') || '').trim();
   var code  = (q.get('code') || q.get('short_code') || '').trim();
+
+  // W-SEC-RT-WAVE2-CAPTRANSPORT-01 (RT-AUTH-08): preferred shape is a BARE
+  // fragment — /invite/#<handle>. A fragment is never sent in an HTTP request,
+  // so the redeemable handle never reaches an origin, CDN, proxy or analytics
+  // log. The query forms above are retained for links already sent.
+  //
+  // Shape routing moved here from the 404 handler because the fragment carries
+  // no key name: claim tokens are long and opaque, short codes are ~12 typed
+  // hex characters, so length is the only signal — and it is the same rule the
+  // 404 handler used, just applied one hop later.
+  var rawHash = (window.location.hash || '').replace(/^#/, '');
+  if (rawHash && rawHash.indexOf('=') === -1 && rawHash.indexOf('&') === -1) {
+    var handle = decodeURIComponent(rawHash).trim();
+    if (handle) {
+      if (handle.length <= 12) { code = code || handle; }
+      else { token = token || handle; }
+    }
+  }
 
   // Read first, then scrub: the claim token must not linger in history or in a
   // URL the recipient might screenshot and share.
@@ -228,6 +249,36 @@
     // reaches the app once App Links / Universal Links verification succeeds,
     // and it cannot while both association files carry founder placeholders —
     // pointing the button at https today would just reload this page.
+    //
+    // W-SEC-RT-WAVE2-CAPTRANSPORT-01 (RT-AUTH-05) — THE HANDLE STAYS HERE, AND
+    // THIS IS THE REASONING, so nobody has to re-derive it.
+    //
+    // A custom scheme is not bound to this app: any installed app may register
+    // kinerix:// and receive whatever is in the URL, fragment included. Moving
+    // the handle to a fragment (which is what fixed RT-AUTH-06 and RT-AUTH-08)
+    // buys NOTHING here — that fix works because fragments are not sent in HTTP
+    // requests, and a scheme handoff is not an HTTP request. Only verified App
+    // Links fix interception, and they are blocked on the real Apple Team ID and
+    // the release signing SHA-256.
+    //
+    // What changed is the value of an intercepted handle. Before
+    // W-SEC-RT-WAVE1-ISSUERSEP-01 the bearer WAS the identity: whoever held it
+    // got the athlete. Now every path to the grant passes an email equality
+    // check first (verified live: the recipient-binding and issuer refusals both
+    // precede the user_player_access INSERT), so an interceptor who does not
+    // control the recipient's verified mailbox cannot redeem it, and cannot burn
+    // it either — a refused claim does not consume the invite. The residual is
+    // disclosure of preview metadata (org / team / inviter names), which the
+    // anonymous preview already exposes to anyone holding the handle by design.
+    //
+    // So: stripping the handle here would break every token link — the code
+    // dialog on the sign-in screen can only accept a typeable SHORT CODE, and a
+    // token-only invitation has none to show — in exchange for closing a vector
+    // that no longer yields access. The proportionate control is the release
+    // gate (tools/release_assoc_gate.py), which refuses to ship the app while
+    // the association files still carry placeholders. Revisit this block when
+    // that gate goes green: at that point the https form works and the custom
+    // scheme should carry nothing.
     $('openApp').setAttribute('href', 'kinerix://invite?' +
       (token ? 'token=' + encodeURIComponent(token)
              : 'code=' + encodeURIComponent(code)));
