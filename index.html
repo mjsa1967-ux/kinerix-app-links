@@ -126,6 +126,16 @@ details .ans a,.note a,.micro a,.trust a,.lede a,.updates a,.panel p a{padding-b
 .proof div{padding:26px 24px;border-left:1px solid var(--line)}
 .proof div:first-child{border-left:0}
 .proof b{display:block;font-size:20px;letter-spacing:-.2px}
+/* Safety signpost: the four commitments, above the fold-and-a-bit, each a
+   link into the full section. Headlines are the section's own h3 strings. */
+.safesign{padding:44px 28px 0}
+.safestrip{border-bottom:0;margin-top:16px}
+.safestrip b{font-size:16px;line-height:1.32;letter-spacing:0}
+.safestrip .lbl{margin-top:8px;display:block}
+.ctaband{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.ctaband-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;padding:34px 28px}
+.ctaband p{color:var(--tp);font-size:19px}
+.ctaband .cta-row{margin-top:0}
 .proof span{display:block;margin-top:6px}
 /* sections */
 section{padding:82px 0}
@@ -300,6 +310,7 @@ footer nav a:hover,footer .mail a:hover{color:var(--tp);border:0;text-decoration
 .prob p{color:var(--ts);font-size:18px}
 @media (forced-colors:active){.hero-bg,.panel-tex,.divider{display:none}}
 @media (max-width:1000px){
+.ctaband-in{flex-direction:column;align-items:flex-start}
 .hero-in{grid-template-columns:1fr;gap:44px;padding:60px 0 56px}
 h1{font-size:38px}h2{font-size:28px}
 .hero-fig img{margin:0 auto}
@@ -533,15 +544,15 @@ h1{font-size:30px}
 <a class="lock" href="https://app.kinerixathletics.com/" aria-label="Kinerix Athletics — home"><span class="wm">KINERIX</span><span class="sub">ATHLETICS</span></a>
 <nav class="top" aria-label="Page sections"><ul>
 <li><a href="#how">How it works</a></li>
-<li><a href="#sports">Sports</a></li>
 <li><a href="#who">Who it's for</a></li>
+<li><a href="#sports">Sports</a></li>
 <li><a href="#safety">Safety &amp; privacy</a></li>
 <li><a href="#pilot">Pilot</a></li>
 </ul></nav>
 <details class="mnav"><summary>Menu<span class="pm" aria-hidden="true"></span></summary><ul>
 <li><a href="#how">How it works</a></li>
-<li><a href="#sports">Sports</a></li>
 <li><a href="#who">Who it's for</a></li>
+<li><a href="#sports">Sports</a></li>
 <li><a href="#safety">Safety &amp; privacy</a></li>
 <li><a href="#pilot">Pilot</a></li>
 </ul></details>
@@ -597,9 +608,7 @@ h1{font-size:30px}
 </figure>
 </div>
 </div>
-
 <div class="standfirst"><div class="shell"><p>A fitness and athletic training platform — not a healthcare provider.</p></div></div>
-
 <div class="picker"><div class="shell picker-in">
 <b>Who are you here for?</b>
 <div class="opts">
@@ -610,16 +619,13 @@ h1{font-size:30px}
 <a href="#who">I represent an organization</a>
 </div>
 </div></div>
-
 <div class="shell"><div class="proof">
 <div><a href="#sports" style="border:0;color:inherit"><b>18 sports</b><span class="lbl">See the full list</span></a></div>
 <div><b>Athletes ages 9 and up</b><span class="lbl">Age range</span></div>
 <div><b>Athlete · parent · coach · trainer · org</b><span class="lbl">One shared picture</span></div>
 <div><b>18 sports × position</b><span class="lbl">Every plan built to both</span></div>
 </div></div>
-<!-- If the first cohort covers fewer than 18 sports, replace the first fact with:
-     "Initial pilot covers N sports; the rest are in development." -->
-
+<hr class="rule">
 <div class="shell"><section id="problem" aria-labelledby="h-prob">
 <div class="sec-head">
 <span class="lbl">The problem</span>
@@ -629,10 +635,8 @@ h1{font-size:30px}
 <p style="margin-top:18px">Parents want to support the work but rarely see the reasoning behind it. Coaches and trainers each see a real, honest part of the picture, and almost never the whole of it. Nobody in that chain is doing anything wrong. The fragmentation is the problem.</p>
 </div>
 </section></div>
-
 <img class="divider" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAwIDEwMCIgd2lkdGg9IjI0MDAiIGhlaWdodD0iMTAwIiBhcmlhLWhpZGRlbj0idHJ1ZSIgZm9jdXNhYmxlPSJmYWxzZSI+CiAgPHJlY3Qgd2lkdGg9IjI0MDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjMEIxMjIwIj48L3JlY3Q+CiAgPHBhdGggZD0iTTgwIDU1SDY0MEw3NjAgNDNIMTA0MEwxMTIwIDU1SDE0NTBMMTU0MCA0NUgxODEwTDE5MDAgNTVIMjMyMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjQzMjQ4IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgb3BhY2l0eT0iMC42MiI+PC9wYXRoPgogIDxwYXRoIGQ9Ik02NDAgNTVMNzYwIDQzSDEwNDBMMTEyMCA1NUgxNDUwTDE1NDAgNDVIMTgxMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMkZDN0M5IiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgb3BhY2l0eT0iMC43OCI+PC9wYXRoPgogIDxjaXJjbGUgY3g9IjY0MCIgY3k9IjU1IiByPSI0IiBmaWxsPSIjMUE3QTdCIiBvcGFjaXR5PSIwLjgiPjwvY2lyY2xlPgogIDxjaXJjbGUgY3g9Ijc2MCIgY3k9IjQzIiByPSI1IiBmaWxsPSIjMkZDN0M5IiBvcGFjaXR5PSIwLjkiPjwvY2lyY2xlPgogIDxjaXJjbGUgY3g9IjExMjAiIGN5PSI1NSIgcj0iNSIgZmlsbD0iI0U4RUVGNyIgb3BhY2l0eT0iMC45MiI+PC9jaXJjbGU+CiAgPGNpcmNsZSBjeD0iMTQ1MCIgY3k9IjU1IiByPSI1IiBmaWxsPSIjQjg5QTRBIiBvcGFjaXR5PSIwLjk1Ij48L2NpcmNsZT4KICA8Y2lyY2xlIGN4PSIxODEwIiBjeT0iNDUiIHI9IjQiIGZpbGw9IiMyRkM3QzkiIG9wYWNpdHk9IjAuNzgiPjwvY2lyY2xlPgo8L3N2Zz4=" width="2400" height="100" alt="" loading="lazy" decoding="async">
 <hr class="rule">
-
 <div class="shell"><section id="how" aria-labelledby="h-how">
 <div class="sec-head">
 <span class="lbl">How Kinerix works</span>
@@ -651,9 +655,64 @@ h1{font-size:30px}
 </div>
 <p class="note">Readiness supports training decisions. It does not diagnose injury, declare an athlete safe, or replace the judgment of the adults around them.</p>
 </section></div>
-
 <hr class="rule">
-
+<div class="shell"><section id="who" aria-labelledby="h-who">
+<div class="sec-head">
+<span class="lbl">Who it's for</span>
+<h2 id="h-who">Everyone around the athlete sees the same plan</h2>
+<p>Each role sees what it needs to act — and nothing it does not. Pilot cohorts are being selected for all five.</p>
+</div>
+<div class="roles">
+<div class="role">
+<div class="role-top"><span class="icbox"><svg class="ic ic-lg" aria-hidden="true" focusable="false"><use href="#i-role-athlete"></use></svg></span><span class="lbl">Athlete</span></div>
+<h3>Know what to do today — and how it helps you improve.</h3>
+<p class="rc">Open the app, see one session, and see the reason it was chosen for you today.</p>
+<p class="go"><a href="#pilot">Apply as an athlete or parent →</a></p>
+</div>
+<div class="role">
+<div class="role-top"><span class="icbox"><svg class="ic ic-lg" aria-hidden="true" focusable="false"><use href="#i-role-parent"></use></svg></span><span class="lbl">Parent or Guardian</span></div>
+<h3>Understand the purpose behind the work.</h3>
+<p class="rc">See what your athlete is being asked to do and why, without having to become a coach yourself.</p>
+<p class="go"><a href="#pilot">Apply as an athlete or parent →</a></p>
+</div>
+<div class="role">
+<div class="role-top"><span class="icbox"><svg class="ic ic-lg" aria-hidden="true" focusable="false"><use href="#i-role-coach"></use></svg></span><span class="lbl">Coach</span></div>
+<h3>Build consistency without treating every athlete the same.</h3>
+<p class="rc">Hold one standard across a roster while each athlete's plan still fits the athlete.</p>
+<p class="go"><a href="#pilot">Apply as a coach →</a></p>
+</div>
+<div class="role">
+<div class="role-top"><span class="icbox"><svg class="ic ic-lg" aria-hidden="true" focusable="false"><use href="#i-role-trainer"></use></svg></span><span class="lbl">Trainer</span></div>
+<h3>See the rest of the athlete's week before you program.</h3>
+<p class="rc">You currently program blind against what the team did Tuesday. Kinerix shows you the athlete's full training load, readiness and development picture — including the parts you don't control. Keep control of your programming; what changes is that you can see what it's landing on top of.</p>
+<p class="go"><a href="#pilot">Apply as a trainer →</a></p>
+</div>
+<div class="role">
+<div class="role-top"><span class="icbox"><svg class="ic ic-lg" aria-hidden="true" focusable="false"><use href="#i-role-org-admin"></use></svg></span><span class="lbl">Org Admin</span></div>
+<h3>Create consistent guardrails while coaches and practitioners keep the flexibility their athletes need.</h3>
+<p class="rc">Set the standard once and see it hold across every team and every practitioner in the organization.</p>
+<p class="go"><a href="#pilot">Apply for an organization →</a></p>
+</div>
+</div>
+<p class="orgnote">Organizations means clubs, teams and training organizations.</p>
+</section></div>
+<hr class="rule">
+<div class="shell safesign">
+<span class="lbl">If the athlete is under 18</span>
+<div class="proof safestrip">
+<div><a href="#safety" style="border:0;color:inherit"><b>Verifiable parental consent under 13</b><span class="lbl">Read the commitment</span></a></div>
+<div><a href="#safety" style="border:0;color:inherit"><b>No open messaging with minors</b><span class="lbl">Read the commitment</span></a></div>
+<div><a href="#safety" style="border:0;color:inherit"><b>Progress is individual</b><span class="lbl">Read the commitment</span></a></div>
+<div><a href="#safety" style="border:0;color:inherit"><b>Not a medical service</b><span class="lbl">Read the commitment</span></a></div>
+</div>
+</div>
+<hr class="rule">
+<div class="ctaband"><div class="shell ctaband-in">
+<p><b>Private pilot cohorts are forming now.</b></p>
+<div class="cta-row"><a class="btn btn-p" href="#pilot">Request Pilot Access</a></div>
+</div></div>
+<img class="divider" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAwIDEwMCIgd2lkdGg9IjI0MDAiIGhlaWdodD0iMTAwIiBhcmlhLWhpZGRlbj0idHJ1ZSIgZm9jdXNhYmxlPSJmYWxzZSI+CiAgPHJlY3Qgd2lkdGg9IjI0MDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjMEIxMjIwIj48L3JlY3Q+CiAgPHBhdGggZD0iTTgwIDU1SDY0MEw3NjAgNDNIMTA0MEwxMTIwIDU1SDE0NTBMMTU0MCA0NUgxODEwTDE5MDAgNTVIMjMyMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjQzMjQ4IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgb3BhY2l0eT0iMC42MiI+PC9wYXRoPgogIDxwYXRoIGQ9Ik02NDAgNTVMNzYwIDQzSDEwNDBMMTEyMCA1NUgxNDUwTDE1NDAgNDVIMTgxMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMkZDN0M5IiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgb3BhY2l0eT0iMC43OCI+PC9wYXRoPgogIDxjaXJjbGUgY3g9IjY0MCIgY3k9IjU1IiByPSI0IiBmaWxsPSIjMUE3QTdCIiBvcGFjaXR5PSIwLjgiPjwvY2lyY2xlPgogIDxjaXJjbGUgY3g9Ijc2MCIgY3k9IjQzIiByPSI1IiBmaWxsPSIjMkZDN0M5IiBvcGFjaXR5PSIwLjkiPjwvY2lyY2xlPgogIDxjaXJjbGUgY3g9IjExMjAiIGN5PSI1NSIgcj0iNSIgZmlsbD0iI0U4RUVGNyIgb3BhY2l0eT0iMC45MiI+PC9jaXJjbGU+CiAgPGNpcmNsZSBjeD0iMTQ1MCIgY3k9IjU1IiByPSI1IiBmaWxsPSIjQjg5QTRBIiBvcGFjaXR5PSIwLjk1Ij48L2NpcmNsZT4KICA8Y2lyY2xlIGN4PSIxODEwIiBjeT0iNDUiIHI9IjQiIGZpbGw9IiMyRkM3QzkiIG9wYWNpdHk9IjAuNzgiPjwvY2lyY2xlPgo8L3N2Zz4=" width="2400" height="100" alt="" loading="lazy" decoding="async">
+<hr class="rule">
 <div class="shell"><section id="measures" aria-labelledby="h-meas">
 <div class="sec-head">
 <span class="lbl">What it measures</span>
@@ -728,7 +787,7 @@ h1{font-size:30px}
 <p class="score-foot">An athlete, a parent, a coach and a trainer all read this same view. Figures shown are illustrative.</p>
 </div>
 </section></div>
-
+<hr class="rule">
 <div class="shell"><section id="confidence" aria-labelledby="h-conf">
 <div class="conf">
 <div>
@@ -755,7 +814,7 @@ h1{font-size:30px}
 </div>
 </div>
 </section></div>
-
+<hr class="rule">
 <div class="band"><div class="shell band-in">
 <div>
 <span class="lbl">Build order</span>
@@ -771,10 +830,8 @@ h1{font-size:30px}
 <p>A hold prevents Kinerix from assigning its normal planned session. It does not make a medical decision, and it does not determine eligibility to practice or compete — those remain with the adults responsible for the athlete. Readiness supports these decisions. It does not diagnose an injury or declare an athlete safe.</p>
 </div>
 </div></div>
-
 <img class="divider" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAwIDEwMCIgd2lkdGg9IjI0MDAiIGhlaWdodD0iMTAwIiBhcmlhLWhpZGRlbj0idHJ1ZSIgZm9jdXNhYmxlPSJmYWxzZSI+CiAgPHJlY3Qgd2lkdGg9IjI0MDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjMEIxMjIwIj48L3JlY3Q+CiAgPHBhdGggZD0iTTgwIDU1SDY0MEw3NjAgNDNIMTA0MEwxMTIwIDU1SDE0NTBMMTU0MCA0NUgxODEwTDE5MDAgNTVIMjMyMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjQzMjQ4IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgb3BhY2l0eT0iMC42MiI+PC9wYXRoPgogIDxwYXRoIGQ9Ik02NDAgNTVMNzYwIDQzSDEwNDBMMTEyMCA1NUgxNDUwTDE1NDAgNDVIMTgxMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMkZDN0M5IiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgb3BhY2l0eT0iMC43OCI+PC9wYXRoPgogIDxjaXJjbGUgY3g9IjY0MCIgY3k9IjU1IiByPSI0IiBmaWxsPSIjMUE3QTdCIiBvcGFjaXR5PSIwLjgiPjwvY2lyY2xlPgogIDxjaXJjbGUgY3g9Ijc2MCIgY3k9IjQzIiByPSI1IiBmaWxsPSIjMkZDN0M5IiBvcGFjaXR5PSIwLjkiPjwvY2lyY2xlPgogIDxjaXJjbGUgY3g9IjExMjAiIGN5PSI1NSIgcj0iNSIgZmlsbD0iI0U4RUVGNyIgb3BhY2l0eT0iMC45MiI+PC9jaXJjbGU+CiAgPGNpcmNsZSBjeD0iMTQ1MCIgY3k9IjU1IiByPSI1IiBmaWxsPSIjQjg5QTRBIiBvcGFjaXR5PSIwLjk1Ij48L2NpcmNsZT4KICA8Y2lyY2xlIGN4PSIxODEwIiBjeT0iNDUiIHI9IjQiIGZpbGw9IiMyRkM3QzkiIG9wYWNpdHk9IjAuNzgiPjwvY2lyY2xlPgo8L3N2Zz4=" width="2400" height="100" alt="" loading="lazy" decoding="async">
 <hr class="rule">
-
 <div class="shell"><section id="sports" aria-labelledby="h-sports">
 <div class="sec-head">
 <span class="lbl">Sports</span>
@@ -785,52 +842,7 @@ h1{font-size:30px}
 <span>Baseball</span><span>Basketball</span><span>Field Hockey</span><span>Football</span><span>Golf</span><span>Gymnastics (Men's)</span><span>Gymnastics (Women's)</span><span>Ice Hockey</span><span>Lacrosse</span><span>Pickleball</span><span>Rugby</span><span>Soccer</span><span>Softball</span><span>Swimming</span><span>Tennis</span><span>Track &amp; Field</span><span>Volleyball</span><span>Wrestling</span>
 </div>
 </section></div>
-
 <hr class="rule">
-
-<div class="shell"><section id="who" aria-labelledby="h-who">
-<div class="sec-head">
-<span class="lbl">Who it's for</span>
-<h2 id="h-who">Everyone around the athlete sees the same plan</h2>
-<p>Each role sees what it needs to act — and nothing it does not. Pilot cohorts are being selected for all five.</p>
-</div>
-<div class="roles">
-<div class="role">
-<div class="role-top"><span class="icbox"><svg class="ic ic-lg" aria-hidden="true" focusable="false"><use href="#i-role-athlete"></use></svg></span><span class="lbl">Athlete</span></div>
-<h3>Know what to do today — and how it helps you improve.</h3>
-<p class="rc">Open the app, see one session, and see the reason it was chosen for you today.</p>
-<p class="go"><a href="#pilot">Apply as an athlete or parent →</a></p>
-</div>
-<div class="role">
-<div class="role-top"><span class="icbox"><svg class="ic ic-lg" aria-hidden="true" focusable="false"><use href="#i-role-parent"></use></svg></span><span class="lbl">Parent or Guardian</span></div>
-<h3>Understand the purpose behind the work.</h3>
-<p class="rc">See what your athlete is being asked to do and why, without having to become a coach yourself.</p>
-<p class="go"><a href="#pilot">Apply as an athlete or parent →</a></p>
-</div>
-<div class="role">
-<div class="role-top"><span class="icbox"><svg class="ic ic-lg" aria-hidden="true" focusable="false"><use href="#i-role-coach"></use></svg></span><span class="lbl">Coach</span></div>
-<h3>Build consistency without treating every athlete the same.</h3>
-<p class="rc">Hold one standard across a roster while each athlete's plan still fits the athlete.</p>
-<p class="go"><a href="#pilot">Apply as a coach →</a></p>
-</div>
-<div class="role">
-<div class="role-top"><span class="icbox"><svg class="ic ic-lg" aria-hidden="true" focusable="false"><use href="#i-role-trainer"></use></svg></span><span class="lbl">Trainer</span></div>
-<h3>See the rest of the athlete's week before you program.</h3>
-<p class="rc">You currently program blind against what the team did Tuesday. Kinerix shows you the athlete's full training load, readiness and development picture — including the parts you don't control. Keep control of your programming; what changes is that you can see what it's landing on top of.</p>
-<p class="go"><a href="#pilot">Apply as a trainer →</a></p>
-</div>
-<div class="role">
-<div class="role-top"><span class="icbox"><svg class="ic ic-lg" aria-hidden="true" focusable="false"><use href="#i-role-org-admin"></use></svg></span><span class="lbl">Org Admin</span></div>
-<h3>Create consistent guardrails while coaches and practitioners keep the flexibility their athletes need.</h3>
-<p class="rc">Set the standard once and see it hold across every team and every practitioner in the organization.</p>
-<p class="go"><a href="#pilot">Apply for an organization →</a></p>
-</div>
-</div>
-<p class="orgnote">Organizations means clubs, teams and training organizations.</p>
-</section></div>
-
-<hr class="rule">
-
 <div class="band"><div class="shell band-in">
 <div>
 <span class="lbl">Adult athletes</span>
@@ -843,9 +855,7 @@ h1{font-size:30px}
 <p>Twelve age bands, from 9–10 through 70+. The pilot request asks for an age band only — not a date of birth, and nothing about health. Date of birth is collected later, in the app, where it is used strictly for age-gating so an athlete moves between bands correctly as they grow.</p>
 </div>
 </div></div>
-
 <hr class="rule">
-
 <div class="shell"><section id="safety" aria-labelledby="h-safe">
 <div class="panel">
 <img class="panel-tex" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAwIDkwMCIgd2lkdGg9IjE2MDAiIGhlaWdodD0iOTAwIiBhcmlhLWhpZGRlbj0idHJ1ZSIgZm9jdXNhYmxlPSJmYWxzZSI+PHJlY3Qgd2lkdGg9IjE2MDAiIGhlaWdodD0iOTAwIiBmaWxsPSIjMTYxRjJFIj48L3JlY3Q+PHBhdGggZD0iTTE0NDAgMTM1QzEyMjAgODUgNTIwIDcwIDMzMCAxMjBDMTgwIDE2MCAxMzAgMzAwIDE0NSA0NTBDMTM1IDY1MCAyNDAgNzgwIDQzMCA4MDBDNzYwIDgzNSAxMTYwIDgxNSAxNDI1IDc0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjQzMjQ4IiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iLjM3Ij48L3BhdGg+PHBhdGggZD0iTTEzNTAgMjE1QzExMjAgMTU1IDYwMCAxNTAgNDEwIDIwMEMyODAgMjQ1IDI0NSAzNTAgMjU1IDQ3MEMyNjAgNjMwIDM1MCA3MTAgNTIwIDczMEM4MDAgNzYwIDExMDAgNzIwIDEzNDAgNjUwIiBmaWxsPSJub25lIiBzdHJva2U9IiMyNDMyNDgiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuMzIiPjwvcGF0aD48cGF0aCBkPSJNMTIzMCAzMDVDMTAzMCAyNTAgNjkwIDI0NSA1NDAgMjk1QzQzMCAzMzUgNDA1IDQyMCA0MjAgNTA1QzQ0MCA2MTAgNTIwIDY2MCA2NTAgNjcwQzg1MCA2OTAgMTA2MCA2NTAgMTIzMCA1OTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzFBN0E3QiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9Ii4yNyI+PC9wYXRoPjxwYXRoIGQ9Ik0xMDkwIDM4NUM5MjAgMzMwIDczNSAzNDAgNjUwIDM4NUM1OTAgNDIwIDU4NSA0NzUgNjEwIDUyMEM2NTAgNTgwIDc2MCA1OTUgODY1IDU4MEM5NzAgNTYwIDEwNDAgNTIwIDExMTAgNDg1IiBmaWxsPSJub25lIiBzdHJva2U9IiMyNDMyNDgiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuMjEiPjwvcGF0aD48cGF0aCBkPSJNMTMwNSAyNTVDMTQ3MCAzMDAgMTUyMCAzOTAgMTUyMCAzOTBNMTI2MCA2MTBDMTQzMCA1NzUgMTUxMCA1MDUgMTUxMCA1MDUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzI0MzI0OCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9Ii4yMiI+PC9wYXRoPjwvc3ZnPg==" width="1600" height="900" alt="" loading="lazy" decoding="async">
@@ -884,9 +894,12 @@ h1{font-size:30px}
 </div>
 </div>
 </section></div>
-
 <hr class="rule">
-
+<div class="ctaband"><div class="shell ctaband-in">
+<p><b>Private pilot cohorts are forming now.</b></p>
+<div class="cta-row"><a class="btn btn-p" href="#pilot">Request Pilot Access</a></div>
+</div></div>
+<hr class="rule">
 <div class="shell"><section id="data" aria-labelledby="h-data">
 <div class="sec-head">
 <span class="lbl">Your data</span>
@@ -907,10 +920,8 @@ h1{font-size:30px}
 <a class="route" href="mailto:info@kinerixathletics.com"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-email-us"></use></svg>Email us — info@kinerixathletics.com<span class="arrow">→</span></a>
 </div>
 </section></div>
-
 <img class="divider" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAwIDEwMCIgd2lkdGg9IjI0MDAiIGhlaWdodD0iMTAwIiBhcmlhLWhpZGRlbj0idHJ1ZSIgZm9jdXNhYmxlPSJmYWxzZSI+CiAgPHJlY3Qgd2lkdGg9IjI0MDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjMEIxMjIwIj48L3JlY3Q+CiAgPHBhdGggZD0iTTgwIDU1SDY0MEw3NjAgNDNIMTA0MEwxMTIwIDU1SDE0NTBMMTU0MCA0NUgxODEwTDE5MDAgNTVIMjMyMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjQzMjQ4IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgb3BhY2l0eT0iMC42MiI+PC9wYXRoPgogIDxwYXRoIGQ9Ik02NDAgNTVMNzYwIDQzSDEwNDBMMTEyMCA1NUgxNDUwTDE1NDAgNDVIMTgxMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMkZDN0M5IiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgb3BhY2l0eT0iMC43OCI+PC9wYXRoPgogIDxjaXJjbGUgY3g9IjY0MCIgY3k9IjU1IiByPSI0IiBmaWxsPSIjMUE3QTdCIiBvcGFjaXR5PSIwLjgiPjwvY2lyY2xlPgogIDxjaXJjbGUgY3g9Ijc2MCIgY3k9IjQzIiByPSI1IiBmaWxsPSIjMkZDN0M5IiBvcGFjaXR5PSIwLjkiPjwvY2lyY2xlPgogIDxjaXJjbGUgY3g9IjExMjAiIGN5PSI1NSIgcj0iNSIgZmlsbD0iI0U4RUVGNyIgb3BhY2l0eT0iMC45MiI+PC9jaXJjbGU+CiAgPGNpcmNsZSBjeD0iMTQ1MCIgY3k9IjU1IiByPSI1IiBmaWxsPSIjQjg5QTRBIiBvcGFjaXR5PSIwLjk1Ij48L2NpcmNsZT4KICA8Y2lyY2xlIGN4PSIxODEwIiBjeT0iNDUiIHI9IjQiIGZpbGw9IiMyRkM3QzkiIG9wYWNpdHk9IjAuNzgiPjwvY2lyY2xlPgo8L3N2Zz4=" width="2400" height="100" alt="" loading="lazy" decoding="async">
 <hr class="rule">
-
 <div class="shell"><section id="pilot" aria-labelledby="h-pilot">
 <div class="pilot-wrap">
 <span class="lbl">Request pilot access</span>
@@ -943,9 +954,7 @@ h1{font-size:30px}
 <p class="updates">Just want to hear when Kinerix launches? <a href="mailto:info@kinerixathletics.com?subject=Updates">Email us with “Updates” in the subject.</a> That is a separate request — you do not need it to apply for the pilot.</p>
 </div>
 </section></div>
-
 <hr class="rule">
-
 <div class="shell"><section id="faq" aria-labelledby="h-faq">
 <div class="sec-head"><span class="lbl">Questions</span><h2 id="h-faq">Before you apply</h2></div>
 <div>
