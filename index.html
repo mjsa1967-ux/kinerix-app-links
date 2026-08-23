@@ -297,6 +297,13 @@ details[open] summary .pm::after{content:"–"}
 summary .pm::after{content:"+"}
 details .ans{color:var(--ts);font-size:16px;padding:0 40px 24px 4px;max-width:78ch}
 details .ans p+p{margin-top:12px}
+/* #measures depth expander. Same affordance as the FAQ rows, but it opens a
+   section's own detail rather than a question, so it carries its own top
+   margin and its .ans re-uses the section grid instead of FAQ prose width. */
+details.more{margin-top:30px;border-bottom:1px solid var(--line)}
+details.more>summary{font-weight:700}
+details.more .ans{max-width:none;padding:4px 0 26px}
+details.more .legend{margin-top:0;padding-top:0;border-top:0}
 /* footer */
 footer.site{border-top:1px solid var(--line);padding:54px 0 66px;color:var(--ts)}
 .fgrid{display:flex;justify-content:space-between;gap:44px;flex-wrap:wrap}
@@ -768,9 +775,14 @@ h1{font-size:30px}
 </table></div>
 <div class="legend">
 <div><b>What this looks like on a Tuesday</b><p>An infielder tests well moving forward and poorly stopping sideways. On a generic program that gap never closes, because most drills run forward. Kinerix reads it as low Control in the Lateral direction — and because Control gates Quickness, the next sessions build deceleration and landing before they add lateral speed work. Same athlete, same week, different Tuesday. <em style="font-style:normal;color:var(--tt)">Illustrative example.</em></p></div>
-<div><b>Sport and position have a shape</b><p>The segments that matter most differ by sport and by position — which is what makes a plan individualized rather than generic. An athlete can be strong going forward and still have work to do moving sideways.</p></div>
 <div><b>Progress is your own</b><p>Every segment is tracked against this athlete's own history. Kinerix does not rank athletes against each other, and it never shows one athlete where they sit relative to another.</p></div>
 </div>
+<p class="score-foot">An athlete, a parent, a coach and a trainer all read this same view. Figures shown are illustrative.</p>
+</div>
+<details class="more">
+<summary>How the scoring works — attribution, the three levels, and the two rings<span class="pm" aria-hidden="true"></span></summary>
+<div class="ans">
+<div><b>Sport and position have a shape</b><p>The segments that matter most differ by sport and by position — which is what makes a plan individualized rather than generic. An athlete can be strong going forward and still have work to do moving sideways.</p></div>
 <p class="note">Eight terms are the complete vocabulary. Every assessment, plan and progress view on the platform uses them — so an athlete, a parent, a coach and a trainer are all reading the same thing.</p>
 <div class="attrib">
 <div><span class="n">01</span><h3>Measure movement, not effort</h3><p>A standard assessment battery, chosen for the athlete's sport, age and stage. The same tests every time, so results compare to that athlete's own history.</p></div>
@@ -784,8 +796,8 @@ h1{font-size:30px}
 <div><b>Performance · the inner ring</b><p>Where the athlete is reading right now. When it runs ahead of development, that is a prompt to assess — not a verdict.</p></div>
 <div><b>The four bars</b><p>The same score opened up by quality, so the next session has somewhere obvious to go. No athlete is compared to another.</p></div>
 </div>
-<p class="score-foot">An athlete, a parent, a coach and a trainer all read this same view. Figures shown are illustrative.</p>
 </div>
+</details>
 </section></div>
 <hr class="rule">
 <div class="shell"><section id="confidence" aria-labelledby="h-conf">
