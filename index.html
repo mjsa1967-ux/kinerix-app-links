@@ -101,6 +101,13 @@ details .ans a,.note a,.micro a,.trust a,.lede a,.updates a,.panel p a{padding-b
 .order{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
 .order span{display:flex;align-items:center;gap:10px;background:var(--raised);border:1px solid var(--line);border-radius:99px;padding:10px 18px;font-size:15px;font-weight:600}
 .order i{font-family:var(--mono);font-size:11px;color:var(--gold);font-style:normal}
+.ladder{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:26px}
+.ladder>div{background:var(--raised);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.ladder i{font-family:var(--mono);font-size:11px;color:var(--gold);font-style:normal;display:block;margin-bottom:8px}
+.ladder b{display:block;font-size:17px;letter-spacing:-.2px}
+.ladder span{display:block;margin-top:6px;color:var(--tt);font-size:13.5px}
+.sessfacts{border-bottom:0}
+.sessfacts b{font-size:26px}
 .hero-fig{margin:0}
 .hero-fig img{width:100%;height:auto;max-width:420px;margin-left:auto;border:1px solid var(--line);border-radius:22px}
 .hphone{width:100%;max-width:340px;margin-left:auto;min-width:0;border:1px solid var(--line);border-radius:34px;background:var(--surface);padding:18px 18px 24px;box-shadow:0 24px 60px rgba(0,0,0,.45)}
@@ -317,6 +324,7 @@ footer nav a:hover,footer .mail a:hover{color:var(--tp);border:0;text-decoration
 .prob p{color:var(--ts);font-size:18px}
 @media (forced-colors:active){.hero-bg,.panel-tex,.divider{display:none}}
 @media (max-width:1000px){
+.ladder{grid-template-columns:1fr}
 .ctaband-in{flex-direction:column;align-items:flex-start}
 .hero-in{grid-template-columns:1fr;gap:44px;padding:60px 0 56px}
 h1{font-size:38px}h2{font-size:28px}
@@ -552,6 +560,7 @@ h1{font-size:30px}
 <nav class="top" aria-label="Page sections"><ul>
 <li><a href="#how">How it works</a></li>
 <li><a href="#who">Who it's for</a></li>
+<li><a href="#session">Sessions</a></li>
 <li><a href="#sports">Sports</a></li>
 <li><a href="#safety">Safety &amp; privacy</a></li>
 <li><a href="#pilot">Pilot</a></li>
@@ -559,6 +568,7 @@ h1{font-size:30px}
 <details class="mnav"><summary>Menu<span class="pm" aria-hidden="true"></span></summary><ul>
 <li><a href="#how">How it works</a></li>
 <li><a href="#who">Who it's for</a></li>
+<li><a href="#session">Sessions</a></li>
 <li><a href="#sports">Sports</a></li>
 <li><a href="#safety">Safety &amp; privacy</a></li>
 <li><a href="#pilot">Pilot</a></li>
@@ -798,6 +808,41 @@ h1{font-size:30px}
 </div>
 </div>
 </details>
+</section></div>
+<hr class="rule">
+<div class="shell"><section id="session" aria-labelledby="h-sess">
+<div class="sec-head">
+<span class="lbl">What you actually do</span>
+<h2 id="h-sess">A session for today, not a program for the month.</h2>
+<p>Measuring is half of it. The other half is what arrives on the athlete's phone: a
+specific session, drawn from a library of 900+ exercises, dosed for their age band and
+filtered by what today's readiness allows.</p>
+</div>
+
+<div class="proof sessfacts">
+<div><b>900+</b><span class="lbl">Exercises in the library</span></div>
+<div><b>400+</b><span class="lbl">Need no equipment at all</span></div>
+<div><b>1 in 3</b><span class="lbl">Withheld when readiness says hold</span></div>
+<div><b>Six age bands</b><span class="lbl">Dosed separately, 9 through 22</span></div>
+</div>
+
+<div class="legend">
+<div><b>Progression is earned, not scheduled</b><p>An athlete does not move up because
+weeks passed. The next level opens when the one below it is repeatable — measured in
+completed sessions, not in calendar time.</p></div>
+<div><b>The same exercise, dosed differently</b><p>Sets and reps are written per age band,
+so a 10-year-old and a 17-year-old doing the same movement are not doing the same work.
+Nothing is scaled by guesswork from an adult program.</p></div>
+</div>
+
+<div class="ladder">
+<div><i>01</i><b>Side Plank</b><span>Open from age 9</span></div>
+<div><i>02</i><b>Rolling Plank</b><span>Opens after 3 clean sessions</span></div>
+<div><i>03</i><b>Plank Bird Dog</b><span>Opens after 5</span></div>
+</div>
+<p class="note">One real progression family from the library, unedited. Around a quarter of
+the library opens this way; most of the rest is gated by age. Every exercise in the library
+carries a coaching cue.</p>
 </section></div>
 <hr class="rule">
 <div class="shell"><section id="confidence" aria-labelledby="h-conf">
