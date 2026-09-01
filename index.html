@@ -276,7 +276,7 @@ hr.rule{border:0;border-top:1px solid var(--line);margin:0}
 .route .arrow{margin-left:auto;color:#a3d2d2;font-family:var(--mono)}
 .mono-note{color:var(--tt);font-size:13.5px;margin-top:16px;font-family:var(--mono)}
 /* pilot */
-#pilot{scroll-margin-top:80px}
+#pilot,#ages{scroll-margin-top:80px}
 .pilot-wrap{border:1px solid var(--gold);border-radius:18px;background:var(--surface);padding:52px 46px}
 .pilot-wrap h2{font-size:36px}
 .pilot-wrap>p{color:var(--ts);margin-top:16px;max-width:66ch}
@@ -323,6 +323,8 @@ footer nav a:hover,footer .mail a:hover{color:var(--tp);border:0;text-decoration
 .prob{max-width:78ch}
 .prob p{color:var(--ts);font-size:18px}
 @media (forced-colors:active){.hero-bg,.panel-tex,.divider{display:none}}
+/* 7-item nav: tighten spacing so the header stays one row down to the 1000px collapse */
+@media (max-width:1180px) and (min-width:1001px){nav.top a{padding:0 8px;font-size:14px}}
 @media (max-width:1000px){
 .ladder{grid-template-columns:1fr}
 .ctaband-in{flex-direction:column;align-items:flex-start}
@@ -562,6 +564,7 @@ h1{font-size:30px}
 <li><a href="#who">Who it's for</a></li>
 <li><a href="#session">Sessions</a></li>
 <li><a href="#sports">Sports</a></li>
+<li><a href="#ages">Ages 9–70+</a></li>
 <li><a href="#safety">Safety &amp; privacy</a></li>
 <li><a href="#pilot">Pilot</a></li>
 </ul></nav>
@@ -570,6 +573,7 @@ h1{font-size:30px}
 <li><a href="#who">Who it's for</a></li>
 <li><a href="#session">Sessions</a></li>
 <li><a href="#sports">Sports</a></li>
+<li><a href="#ages">Ages 9–70+</a></li>
 <li><a href="#safety">Safety &amp; privacy</a></li>
 <li><a href="#pilot">Pilot</a></li>
 </ul></details>
@@ -900,7 +904,7 @@ carries a coaching cue.</p>
 </div>
 </section></div>
 <hr class="rule">
-<div class="band"><div class="shell band-in">
+<div class="band" id="ages"><div class="shell band-in">
 <div>
 <span class="lbl">Adult athletes</span>
 <h2 style="margin-top:14px">Adults train on a different clock.</h2>
