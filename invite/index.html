@@ -155,18 +155,29 @@
   // hex characters, so length is the only signal — and it is the same rule the
   // 404 handler used, just applied one hop later.
   var rawHash = (window.location.hash || '').replace(/^#/, '');
+
+  // Read first, then scrub: the claim token must not linger in history or in a
+  // URL the recipient might screenshot and share. W-P22-INVITE-FRAGMENT-SHAPE-01
+  // (gov 9972): the scrub now runs BEFORE the fragment is decoded. It used to run
+  // after, so a malformed fragment such as #%zz threw URIError out of
+  // decodeURIComponent and left the handle in the address bar.
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  // Same shape rule as InviteClaimIntent.tryParse: server short codes are 12 hex
+  // characters and tokens are hex, so a handle carrying any other mark is a
+  // damaged link, never a short code.
+  var damagedLink = false;
   if (rawHash && rawHash.indexOf('=') === -1 && rawHash.indexOf('&') === -1) {
-    var handle = decodeURIComponent(rawHash).trim();
+    var handle = '';
+    try { handle = decodeURIComponent(rawHash).trim(); }
+    catch (e) { damagedLink = true; }
+    if (handle && !/^[A-Za-z0-9_-]+$/.test(handle)) { damagedLink = true; handle = ''; }
     if (handle) {
       if (handle.length <= 12) { code = code || handle; }
       else { token = token || handle; }
     }
-  }
-
-  // Read first, then scrub: the claim token must not linger in history or in a
-  // URL the recipient might screenshot and share.
-  if (window.history && window.history.replaceState) {
-    window.history.replaceState({}, document.title, window.location.pathname);
   }
 
   function fail(msg) {
@@ -176,7 +187,9 @@
   }
 
   if (!token && !code) {
-    fail('Use the full invitation link or code you were sent.');
+    fail(damagedLink
+      ? 'This invitation link is damaged. Open the original link from your email, or enter the code you were sent.'
+      : 'Use the full invitation link or code you were sent.');
     return;
   }
 

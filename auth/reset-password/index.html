@@ -227,6 +227,16 @@
   // failed with a generic error.
   var query = new URLSearchParams(window.location.search);
   var rawFrag = (window.location.hash || '').replace(/^#/, '');
+
+  // The token must not linger in history, screenshots or a shared URL.
+  // Read first, then scrub — everything below works from the variables above.
+  // W-AUTH-RESET-FRAGMENT-SHAPE-01: the scrub now runs BEFORE the fragment is
+  // decoded. It used to run after, so a malformed fragment such as #%zz threw
+  // URIError out of decodeURIComponent and left the token in the address bar.
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
   var frag  = new URLSearchParams(rawFrag);
 
   // W-SEC-RT-WAVE2-CAPTRANSPORT-01 (RT-AUTH-06): preferred shape is a BARE
@@ -244,9 +254,20 @@
   // analytics logs cannot see it. The path form is retained below for links
   // already in inboxes; those still expose the token once, which is why the
   // 404 handler no longer converts them into a SECOND logged copy as a query.
-  var bareFrag = (rawFrag && rawFrag.indexOf('=') === -1 && rawFrag.indexOf('&') === -1)
-    ? decodeURIComponent(rawFrag).trim()
-    : '';
+  //
+  // A token hash is hex (optionally "pkce_"-prefixed), so a bare fragment that
+  // will not decode, or decodes to any other mark, is a damaged link: it is
+  // shown the invalid-link state and never sent to GoTrue.
+  var damagedLink = false;
+  var bareFrag = '';
+  if (rawFrag && rawFrag.indexOf('=') === -1 && rawFrag.indexOf('&') === -1) {
+    try { bareFrag = decodeURIComponent(rawFrag).trim(); }
+    catch (e) { damagedLink = true; }
+    if (bareFrag && !/^[A-Za-z0-9_-]+$/.test(bareFrag)) {
+      damagedLink = true;
+      bareFrag = '';
+    }
+  }
 
   var tokenHash  = bareFrag || query.get('token_hash') || frag.get('token_hash');
   var linkErrDesc = query.get('error_description') || frag.get('error_description');
@@ -263,12 +284,6 @@
   var fragAccess = (fragType === 'recovery') ? frag.get('access_token') : null;
   var fragWrongType = !!frag.get('access_token') && fragType !== 'recovery';
 
-  // The token must not linger in history, screenshots or a shared URL.
-  // Read first, then scrub — everything below works from the variables above.
-  if (window.history && window.history.replaceState) {
-    window.history.replaceState({}, document.title, window.location.pathname);
-  }
-
   if (linkErrDesc) {
     showDead(linkErrDesc);
   } else if (!tokenHash && !fragAccess) {
@@ -277,6 +292,8 @@
       // real, it is just not a recovery token, and this page must not spend it.
       showDead('This link is not a password-reset link. Request a reset from ' +
                'the sign-in screen and open the email it sends.');
+    } else if (damagedLink) {
+      showDead(); // the card's own "invalid or has expired" message
     } else if (pkceCode) {
       showDead('This link has to be opened on the device that requested the ' +
                'reset. Request a new one and open it on this device.');
